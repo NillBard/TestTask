@@ -8,8 +8,12 @@
 
 <script>
 export default {
+  data() {
+    return { index: 0 };
+  },
   name: "StoreyItem",
   props: { number: { type: Number, required: true } },
+  emits: ["call"],
 };
 </script>
 

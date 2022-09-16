@@ -1,13 +1,34 @@
 <template>
   <div id="app">
-    <lift-block :floor="floor"></lift-block>
+    <div class="lift-wrapper">
+      <lift-block
+        v-for="lift in cabins"
+        :key="lift.num"
+        :floor="floor"
+        :currentFloor="lift.currentFloor"
+        :navigate="lift.navigate"
+        :top="lift.top"
+        :diff="lift.diff"
+        :state="lift.state"
+      />
+    </div>
     <div class="floor-wrapper">
       <storey-item
         v-for="n in 5"
+        :key="n"
         class="floor"
         :number="n"
-        @call="(i) => (floor = i)"
+        @call="
+          (i) => {
+            if (!queue.includes(i)) {
+              add(i);
+              stack.push(i);
+              length = stack.length;
+            }
+          }
+        "
       ></storey-item>
+      {{ stack }}{{ queue }}
     </div>
   </div>
 </template>
@@ -15,14 +36,48 @@
 <script>
 import LiftBlock from "./components/LiftBlock.vue";
 import StoreyItem from "./components/storey.vue";
+import { mapActions, mapMutations } from "vuex";
+
 export default {
   name: "app",
   data() {
     return {
       floor: 1,
+      liftCounts: 4,
+      lifts: null,
+      length: 0,
+      stack: [],
     };
   },
   components: { LiftBlock, StoreyItem },
+  computed: {
+    cabins() {
+      return this.$store.state.cabins;
+    },
+    queue() {
+      return this.$store.state.queue;
+    },
+  },
+  methods: {
+    ...mapActions({ move: "moveLift" }),
+    ...mapMutations({ add: "setQueue" }),
+  },
+  watch: {
+    stack: {
+      handler(value) {
+        if (this.stack.length === this.length) {
+          const floor = this.stack[0];
+          this.move({ floor });
+          this.stack.shift();
+        }
+      },
+      deep: true,
+    },
+  },
+
+  mounted() {
+    this.$store.dispatch("setCabins", this.liftCounts);
+  },
 };
 </script>
 
@@ -32,16 +87,24 @@ export default {
   padding: 0;
   box-sizing: border-box;
 }
+
 #app {
   width: 100%;
   margin: 0 20px;
   display: flex;
   flex-direction: row;
 }
+
+.lift-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
 .floor {
   background-color: transparent;
   z-index: 1;
 }
+
 .floor-wrapper {
   flex: 1;
   display: flex;

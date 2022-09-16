@@ -1,8 +1,9 @@
 <template>
   <div class="wrapper">
-    <div class="lift" :style="{ top: `${topp}px`, transition: diff + 's' }">
-      {{ floor }} {{ diff }}
+    <div class="lift" :style="{ top: `${pos}px`, transition: diff + 's' }">
+      {{ floor }} {{ diff }} {{ currentFloor }}
     </div>
+    {{ state }}
   </div>
 </template>
 
@@ -11,48 +12,33 @@ export default {
   name: "LiftBlock",
   data() {
     return {
-      topp: 600,
-      time: 4,
-      currentFloor: 1,
-      diff: 0,
-      navigate: "",
+      pos: 600,
     };
   },
   props: {
+    top: { type: Number, required: true },
     floor: { type: Number, required: true },
+    currentFloor: { type: Number, required: true },
+    diff: { type: Number, required: true },
+    state: { type: String, required: true },
+    navigate: { type: String, required: true },
   },
+
   watch: {
-    diff(value) {
-      if (this.navigate == "up") {
-        this.topp = this.topp - this.diff * 150;
-      } else if (this.navigate == "down") {
-        this.topp = this.topp + this.diff * 150;
-      }
-      setTimeout(() => {
-        this.diff = 0;
-      }, 1000);
-    },
-    floor(value) {
-      let difference = 0;
-      difference = this.currentFloor - this.floor;
-      if (difference > 0) {
-        this.navigate = "down";
-      } else if (difference < 0) {
-        this.navigate = "up";
-      }
-      this.currentFloor = this.floor;
-      this.diff = Math.abs(difference);
-      return Math.abs(difference);
+    top(value) {
+      this.pos = 0;
+      this.pos += value;
     },
   },
-  methods: {
-    downFloor() {
-      this.topp += 150;
-    },
-    upFloor() {
-      this.topp -= 300;
-    },
-  },
+  // methods: {
+  //   downFloor() {
+  //     this.topp += 150;
+  //   },
+
+  //   upFloor() {
+  //     this.topp -= 300;
+  //   }
+  // }
 };
 </script>
 
@@ -68,7 +54,7 @@ export default {
   width: fit-content;
   padding: 0;
   height: 750px;
-  border: 1px solid;
+  border: 2px solid;
   margin: 0;
   /* height: var(--storey-number)750px; */
 }
