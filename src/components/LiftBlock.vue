@@ -1,7 +1,11 @@
 <template>
   <div class="wrapper">
-    <div class="lift" :style="{ top: `${pos}px`, transition: diff + 's' }">
-      {{ currentFloor }} {{ navigate }}
+    <div
+      class="lift"
+      :class="{ shake: state === 'stopping' }"
+      :style="{ top: `${pos}px`, transition: diff + 's' }"
+    >
+      <div class="panel">{{ currentFloor }} {{ navigate }}</div>
     </div>
   </div>
 </template>
@@ -42,7 +46,22 @@ export default {
   width: 100px;
   height: 150px;
   background-color: yellow;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border: 1px solid rgb(144, 144, 2);
 }
+
+.panel {
+  background-color: aqua;
+  text-align: center;
+  padding: 7px;
+  font-size: larger;
+  border-radius: 5px;
+}
+
 .wrapper {
   background: transparent;
   width: fit-content;
@@ -51,5 +70,35 @@ export default {
   border: 2px solid;
   margin: 0;
   /* height: var(--storey-number)750px; */
+}
+
+.shake {
+  animation: shake 2s;
+}
+
+@keyframes shake {
+  0% {
+    background-color: rgb(245, 245, 209);
+  }
+
+  20% {
+    background-color: rgb(249, 249, 40);
+  }
+
+  40% {
+    background-color: rgb(245, 245, 209);
+  }
+
+  60% {
+    background-color: rgb(249, 249, 40);
+  }
+
+  80% {
+    background-color: rgb(245, 245, 209);
+  }
+
+  100% {
+    background-color: rgb(249, 249, 40);
+  }
 }
 </style>

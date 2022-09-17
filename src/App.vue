@@ -18,6 +18,7 @@
         v-for="n in 5"
         :key="n"
         class="floor"
+        :queue="queue"
         :number="n"
         @call="
           (i) => {
