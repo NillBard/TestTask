@@ -36,7 +36,6 @@ export const store = createStore({
       let queue = [];
       if (localStorage.getItem("queue")) {
         queue = [...JSON.parse(localStorage.getItem("queue"))];
-        console.log(queue);
       }
       commit("setQueue", queue);
     },
@@ -121,10 +120,14 @@ export const store = createStore({
         .then((cabin) => {
           setTimeout(() => {
             cabin.state = "waiting";
-            console.log(state.queue);
             commit("deleteFirstElement");
             localStorage.setItem(cabin.num, JSON.stringify(cabin));
-            localStorage.setItem("queue", JSON.stringify(this.queue));
+            if (state.queue === undefined) {
+              localStorage.removeItem("queue");
+            } else {
+              localStorage.setItem("queue", JSON.stringify(this.queue));
+            }
+            console.log(state.queue);
 
             return cabin;
           }, 2000);

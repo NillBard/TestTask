@@ -77,11 +77,18 @@ export default {
     },
   },
 
-  created() {
+  async mounted() {
     this.$store.dispatch("setCabins", {
       count: this.liftCounts,
       top: 150 * (this.floorCounts - 1),
     });
+    this.$store.dispatch("setQueue");
+    if (this.queue.length > 0) {
+      this.stack = [...this.queue];
+      while (this.queue.length > 0) {
+        await this.$store.dispatch("moveLift", { floor: this.stack.shift() });
+      }
+    }
   },
 };
 </script>
