@@ -10,7 +10,8 @@
         :top="lift.top"
         :diff="lift.diff"
         :state="lift.state"
-      />
+      >
+      </lift-block>
     </div>
     <div class="floor-wrapper">
       <storey-item
@@ -28,7 +29,6 @@
           }
         "
       ></storey-item>
-      {{ stack }}{{ queue }}
     </div>
   </div>
 </template>
@@ -44,7 +44,6 @@ export default {
     return {
       floor: 1,
       liftCounts: 4,
-      lifts: null,
       length: 0,
       stack: [],
     };
@@ -60,15 +59,15 @@ export default {
   },
   methods: {
     ...mapActions({ move: "moveLift" }),
-    ...mapMutations({ add: "setQueue" }),
+    ...mapMutations({ add: "setQueueEl" }),
   },
   watch: {
-    stack: {
-      handler(value) {
+    queue: {
+      async handler(value) {
         if (this.stack.length === this.length) {
-          const floor = this.stack[0];
-          this.move({ floor });
-          this.stack.shift();
+          localStorage.setItem("queue", JSON.stringify(this.queue));
+          const floor = this.stack.shift();
+          await this.move({ floor });
         }
       },
       deep: true,

@@ -1,9 +1,8 @@
 <template>
   <div class="wrapper">
     <div class="lift" :style="{ top: `${pos}px`, transition: diff + 's' }">
-      {{ floor }} {{ diff }} {{ currentFloor }}
+      {{ currentFloor }} {{ navigate }}
     </div>
-    {{ state }}
   </div>
 </template>
 
@@ -30,15 +29,10 @@ export default {
       this.pos += value;
     },
   },
-  // methods: {
-  //   downFloor() {
-  //     this.topp += 150;
-  //   },
 
-  //   upFloor() {
-  //     this.topp -= 300;
-  //   }
-  // }
+  created() {
+    this.pos = this.top;
+  },
 };
 </script>
 

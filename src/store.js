@@ -15,7 +15,10 @@ export const store = createStore({
     setDiff(state, diff) {
       state.diff = diff;
     },
-    setQueue(state, el) {
+    setQueue(state, queue) {
+      state.queue = queue;
+    },
+    setQueueEl(state, el) {
       state.queue = [...state.queue, el];
     },
     setIndex(state, index) {
@@ -27,44 +30,55 @@ export const store = createStore({
     deleteFirstElement(state) {
       state.queue.shift();
     },
-    setLift(state, lift) {
-      state.cabins = state.cabins.map((el) => {
-        console.log(el);
-        if (el.num === lift.num) {
-          el = lift;
-        }
-      });
-    },
   },
   actions: {
+    setQueue({ commit }) {
+      let queue = [];
+      if (localStorage.getItem("queue")) {
+        queue = [...JSON.parse(localStorage.getItem("queue"))];
+        console.log(queue);
+      }
+      commit("setQueue", queue);
+    },
+
     setCabins({ commit }, count) {
       const cabins = [];
       for (let i = 0; i < count; i++) {
         if (localStorage.getItem(i)) {
-          cabins.push(localStorage.getItem(i));
+          const obj = JSON.parse(localStorage.getItem(i));
+          cabins.push(
+            new Cabin(
+              obj.num,
+              obj.currentFloor,
+              obj.diff,
+              obj.navigate,
+              obj.state,
+              obj.top
+            )
+          );
         } else {
           cabins.push(new Cabin(i));
         }
       }
+      console.log(cabins[0]);
       commit("setCabins", cabins);
     },
 
-    foundLift({ state, commit }, floor) {
+    foundLift({ state, dispatch, commit }, floor) {
       return new Promise((resolve) => {
         setTimeout(() => {
-          const arrDiff = [];
+          let index;
           let min = 10000;
-          state.cabins.forEach((element, index) => {
+          state.cabins.forEach((element, i) => {
             if (element.state === "waiting" && element.currentFloor !== floor)
               if (Math.abs(element.calc(floor)) < min) {
                 min = Math.abs(element.calc(floor));
-                arrDiff.push(index);
+                index = i;
               }
           });
 
-          if (arrDiff.length === 0) return;
-          const index = Math.min([...arrDiff]);
-          // console.log(arrDiff);
+          if (index === undefined) return dispatch("moveLift", { floor });
+
           const diff = state.cabins[index].calc(floor);
           commit("setDiff", diff);
           commit("setIndex", index);
@@ -101,40 +115,21 @@ export const store = createStore({
               lift.state = "stopping";
               lift.diff = 0;
               commit("setDiff", 0);
-              // commit("setLift", lift);
               resolve(lift);
             }, state.diff * 1000);
           });
         })
         .then((cabin) => {
-          console.log(cabin);
           setTimeout(() => {
             cabin.state = "waiting";
+            console.log(state.queue);
             commit("deleteFirstElement");
+            localStorage.setItem(cabin.num, JSON.stringify(cabin));
+            localStorage.setItem("queue", JSON.stringify(this.queue));
+
             return cabin;
           }, 2000);
         });
     },
   },
 });
-
-// .then((lift) => {
-//   return new Promise((resolve) => {
-//     setTimeout(() => {
-//       lift.navigate = "";
-//       lift.state = "stopping";
-//       lift.diff = 0;
-//       commit("setDiff", 0);
-//       // commit("setLift", lift);
-//       resolve(lift);
-//     }, state.diff * 1000);
-//   });
-// })
-// .then((cabin) => {
-//   console.log(cabin);
-//   setTimeout(() => {
-//     cabin.state = "waiting";
-//     // commit("setLift", cabin);
-//     return cabin;
-//   }, 2000);
-// });
