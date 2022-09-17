@@ -10,12 +10,13 @@
         :top="lift.top"
         :diff="lift.diff"
         :state="lift.state"
+        :storey="floorCounts"
       >
       </lift-block>
     </div>
     <div class="floor-wrapper">
       <storey-item
-        v-for="n in 5"
+        v-for="n in floorCounts"
         :key="n"
         class="floor"
         :queue="queue"
@@ -45,6 +46,7 @@ export default {
     return {
       floor: 1,
       liftCounts: 4,
+      floorCounts: 6,
       length: 0,
       stack: [],
     };
@@ -75,8 +77,11 @@ export default {
     },
   },
 
-  mounted() {
-    this.$store.dispatch("setCabins", this.liftCounts);
+  created() {
+    this.$store.dispatch("setCabins", {
+      count: this.liftCounts,
+      top: 150 * (this.floorCounts - 1),
+    });
   },
 };
 </script>

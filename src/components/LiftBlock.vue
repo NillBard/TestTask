@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" :style="{ height: `${150 * storey}px` }">
     <div
       class="lift"
       :class="{ shake: state === 'stopping' }"
@@ -25,6 +25,7 @@ export default {
     diff: { type: Number, required: true },
     state: { type: String, required: true },
     navigate: { type: String, required: true },
+    storey: { type: Number, required: true },
   },
 
   watch: {
@@ -66,10 +67,8 @@ export default {
   background: transparent;
   width: fit-content;
   padding: 0;
-  height: 750px;
   border: 2px solid;
   margin: 0;
-  /* height: var(--storey-number)750px; */
 }
 
 .shake {

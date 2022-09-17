@@ -41,7 +41,7 @@ export const store = createStore({
       commit("setQueue", queue);
     },
 
-    setCabins({ commit }, count) {
+    setCabins({ commit }, { count, top }) {
       const cabins = [];
       for (let i = 0; i < count; i++) {
         if (localStorage.getItem(i)) {
@@ -49,18 +49,17 @@ export const store = createStore({
           cabins.push(
             new Cabin(
               obj.num,
+              obj.top,
               obj.currentFloor,
               obj.diff,
               obj.navigate,
-              obj.state,
-              obj.top
+              obj.state
             )
           );
         } else {
-          cabins.push(new Cabin(i));
+          cabins.push(new Cabin(i, top));
         }
       }
-      console.log(cabins[0]);
       commit("setCabins", cabins);
     },
 
